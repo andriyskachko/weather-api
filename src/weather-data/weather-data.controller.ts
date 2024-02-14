@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { WeatherDataService } from './weather-data.service';
-import { CreateWeatherDatumDto } from './dto/create-weather-datum.dto';
-import { UpdateWeatherDatumDto } from './dto/update-weather-datum.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { WeatherDataService } from './data-access/weather-data.service';
+import { CreateWeatherDatumDto } from './data-access/dto/create-weather-datum.dto';
+import { UpdateWeatherDatumDto } from './data-access/dto/update-weather-datum.dto';
 
 @Controller('weather-data')
 export class WeatherDataController {
@@ -23,7 +31,10 @@ export class WeatherDataController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWeatherDatumDto: UpdateWeatherDatumDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateWeatherDatumDto: UpdateWeatherDatumDto,
+  ) {
     return this.weatherDataService.update(+id, updateWeatherDatumDto);
   }
 

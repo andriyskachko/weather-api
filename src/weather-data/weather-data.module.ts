@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { WeatherDataService } from './weather-data.service';
+import { WeatherDataService } from './data-access/weather-data.service';
 import { WeatherDataController } from './weather-data.controller';
 
 @Module({

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WeatherDataController } from './weather-data.controller';
-import { WeatherDataService } from './weather-data.service';
+import { WeatherDataService } from './data-access/weather-data.service';
 
 describe('WeatherDataController', () => {
   let controller: WeatherDataController;
