@@ -20,7 +20,7 @@ export class WeatherDataInterceptor implements NestInterceptor {
       tap((weatherData) => {
         if (!weatherData) {
           throw new BadRequestException({
-            message: 'Weather data not found',
+            message: 'WEATHER_DATA_NOT_FOUND',
             status: HttpStatusCode.NotFound,
           });
         }

@@ -1,0 +1,5 @@
+{
+  "EXCLUDE_PART": "Part to exclude must be one of the following values: 'current', 'minutely', 'hourly', 'daily', 'alerts'",
+  "LATITUDE": "Provided latitude is incorrect: should be a number in range -90 <= 90",
+  "LONGITUDE": "Provided longitude is incorrect: should be a number in range -180 <= 180"
+}
