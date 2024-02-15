@@ -1,5 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { map, of, switchMap } from 'rxjs';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { from, map, switchMap } from 'rxjs';
 import { handleAxiosError } from 'src/shared/utils/handle-axios-error';
 import { CreateWeatherDataDto } from './data-access/dto';
 import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
@@ -19,7 +19,19 @@ export class WeatherDataController {
       .pipe(
         map((response) => response.data),
         handleAxiosError(),
-        switchMap((json) => of(this.weatherDataService.create(json))),
+        switchMap((json) =>
+          from(
+            this.weatherDataService.createOrUpdate({
+              json,
+              ...createWeatherDataDto,
+            }),
+          ),
+        ),
       );
+  }
+
+  @Get()
+  getAll() {
+    return this.weatherDataService.getAll();
   }
 }

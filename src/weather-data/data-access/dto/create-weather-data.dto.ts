@@ -17,6 +17,9 @@ export class CreateWeatherDataDto {
   lon: number | string;
 
   @IsOptional()
-  @IsIn(RESPONSE_EXCLUDE_PARTS, { message: WEATHER_DATA_ERRORS.EXCLUDE_PART })
+  @IsIn(RESPONSE_EXCLUDE_PARTS, {
+    message: WEATHER_DATA_ERRORS.EXCLUDE_PART,
+    each: true,
+  })
   part?: ResponseExcludePart[];
 }

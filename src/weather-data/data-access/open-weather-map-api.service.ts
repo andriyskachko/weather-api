@@ -24,7 +24,7 @@ export class OpenWeatherMapApiService {
     const params = {
       lat,
       lon,
-      ...(part !== undefined ? { exclude: part.join(',') } : {}),
+      ...(part ? { exclude: part.join(',') } : {}),
       appId: this.configService.get('OPEN_WEATHER_MAP_API_KEY'),
     };
 
