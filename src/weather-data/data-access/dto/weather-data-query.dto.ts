@@ -11,9 +11,11 @@ export class WeatherDataQueryFilter extends OmitType(CreateWeatherDataDto, [
   'part',
 ]) {
   @IsOptional()
-  @Transform(({ value }) => (value as string).replace(/\s/g, '').split(','))
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.replace(/\s/g, '').split(',') : value,
+  )
   @IsIn(RESPONSE_EXCLUDE_PARTS, {
-    message: 'EXCLUDE_PART',
+    message: 'validation.EXCLUDE_PART',
     each: true,
   })
   part?: ResponseExcludePart[];

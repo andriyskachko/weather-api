@@ -8,19 +8,19 @@ import {
 export class CreateWeatherDataDto {
   @Type(() => Number)
   @IsLatitude({
-    message: 'LATITUDE',
+    message: 'validation.LATITUDE',
   })
   lat: number;
 
   @Type(() => Number)
   @IsLongitude({
-    message: 'LONGITUDE',
+    message: 'validation.LONGITUDE',
   })
   lon: number;
 
   @IsOptional()
   @IsIn(RESPONSE_EXCLUDE_PARTS, {
-    message: 'EXCLUDE_PART',
+    message: 'validation.EXCLUDE_PART',
     each: true,
   })
   part?: ResponseExcludePart[];
