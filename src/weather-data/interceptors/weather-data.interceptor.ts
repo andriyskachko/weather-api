@@ -9,6 +9,7 @@ import { HttpStatusCode } from 'axios';
 import { Observable, map, tap } from 'rxjs';
 import { WeatherData } from '../data-access/entities/weather-data.entity';
 import { WeatherDataResponse } from '../data-access/models/weather-data-response.interface';
+import { MESSAGES } from '../utils/messages';
 
 @Injectable()
 export class WeatherDataInterceptor implements NestInterceptor {
@@ -20,7 +21,7 @@ export class WeatherDataInterceptor implements NestInterceptor {
       tap((weatherData) => {
         if (!weatherData) {
           throw new BadRequestException({
-            message: 'Weather data not found',
+            message: MESSAGES.EXCEPTIONS.WEATHER_DATA_NOT_FOUND,
             status: HttpStatusCode.NotFound,
           });
         }
