@@ -1,7 +1,7 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
 import { IsIn, IsOptional } from 'class-validator';
-import { MESSAGES } from 'src/weather-data/utils/messages';
+import { MESSAGES } from 'src/weather-data/utils/constants';
 import {
   RESPONSE_EXCLUDE_PARTS,
   ResponseExcludePart,

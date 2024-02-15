@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsLatitude, IsLongitude, IsOptional } from 'class-validator';
-import { MESSAGES } from 'src/weather-data/utils/messages';
+import { MESSAGES } from 'src/weather-data/utils/constants';
 import {
   RESPONSE_EXCLUDE_PARTS,
   ResponseExcludePart,

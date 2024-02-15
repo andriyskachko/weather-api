@@ -9,7 +9,7 @@ import { HttpStatusCode } from 'axios';
 import { Observable, map, tap } from 'rxjs';
 import { WeatherData } from '../data-access/entities/weather-data.entity';
 import { WeatherDataResponse } from '../data-access/models/weather-data-response.interface';
-import { MESSAGES } from '../utils/messages';
+import { MESSAGES } from '../utils/constants';
 
 @Injectable()
 export class WeatherDataInterceptor implements NestInterceptor {
