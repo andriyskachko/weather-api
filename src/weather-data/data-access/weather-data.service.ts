@@ -40,10 +40,13 @@ export class WeatherDataService {
     return this.weatherDataRepository.save(weatherDataRecord);
   }
 
-  public findWeatherData(filter: WeatherDataQueryFilter) {
+  public findWeatherData({
+    lat,
+    lon,
+  }: WeatherDataQueryFilter): Promise<WeatherData> {
     return this.weatherDataRepository.findOneBy({
-      lat: filter.lat,
-      lon: filter.lon,
+      lat,
+      lon,
     });
   }
 }

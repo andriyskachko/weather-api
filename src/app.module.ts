@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { WeatherData } from './weather-data/data-access/entities/weather-data.entity';
 import { WeatherDataModule } from './weather-data/weather-data.module';
 
@@ -26,7 +24,5 @@ import { WeatherDataModule } from './weather-data/weather-data.module';
     }),
     WeatherDataModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
