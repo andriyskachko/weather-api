@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateWeatherDatumDto } from './dto/create-weather-datum.dto';
-import { UpdateWeatherDatumDto } from './dto/update-weather-datum.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { WeatherDataQueryFilter } from './dto';
+import { WeatherData } from './entities/weather-data.entity';
+import { OpenWeatherMapApiResponse } from './models/open-weather-map-api-response.interface';
+
+export interface WeatherDataPostPayload {
+  json: OpenWeatherMapApiResponse;
+  lat: number;
+  lon: number;
+}
 
 @Injectable()
 export class WeatherDataService {
-  create(createWeatherDatumDto: CreateWeatherDatumDto) {
-    return 'This action adds a new weatherDatum';
+  constructor(
+    @InjectRepository(WeatherData)
+    private weatherDataRepository: Repository<WeatherData>,
+  ) {}
+
+  public async createOrUpdate({
+    json,
+    lat,
+    lon,
+  }: WeatherDataPostPayload): Promise<WeatherData> {
+    let weatherDataRecord = await this.weatherDataRepository.findOneBy({
+      lat,
+      lon,
+    });
+
+    if (!weatherDataRecord) {
+      weatherDataRecord = new WeatherData();
+      weatherDataRecord.json = json;
+      weatherDataRecord.lat = lat;
+      weatherDataRecord.lon = lon;
+    } else {
+      weatherDataRecord.json = json;
+    }
+
+    return this.weatherDataRepository.save(weatherDataRecord);
   }
 
-  findAll() {
-    return `This action returns all weatherData`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} weatherDatum`;
-  }
-
-  update(id: number, updateWeatherDatumDto: UpdateWeatherDatumDto) {
-    return `This action updates a #${id} weatherDatum`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} weatherDatum`;
+  public findWeatherData(filter: WeatherDataQueryFilter) {
+    return this.weatherDataRepository.findOneBy({
+      lat: filter.lat,
+      lon: filter.lon,
+    });
   }
 }

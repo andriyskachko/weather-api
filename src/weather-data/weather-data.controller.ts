@@ -1,45 +1,59 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
+import { Observable, from, map, switchMap } from 'rxjs';
+import { handleAxiosError } from 'src/shared/utils/handle-axios-error';
+import {
+  CreateWeatherDataDto,
+  WeatherDataQueryFilter,
+} from './data-access/dto';
+import { WeatherData } from './data-access/entities/weather-data.entity';
+import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
 import { WeatherDataService } from './data-access/weather-data.service';
-import { CreateWeatherDatumDto } from './data-access/dto/create-weather-datum.dto';
-import { UpdateWeatherDatumDto } from './data-access/dto/update-weather-datum.dto';
+import { WeatherDataInterceptor } from './interceptors/weather-data.interceptor';
 
 @Controller('weather-data')
 export class WeatherDataController {
-  constructor(private readonly weatherDataService: WeatherDataService) {}
+  constructor(
+    private weatherDataService: WeatherDataService,
+    private openWeatherMapApiService: OpenWeatherMapApiService,
+  ) {}
 
   @Post()
-  create(@Body() createWeatherDatumDto: CreateWeatherDatumDto) {
-    return this.weatherDataService.create(createWeatherDatumDto);
+  public create(
+    @Body() createWeatherDataDto: CreateWeatherDataDto,
+  ): Observable<WeatherData> {
+    return this.openWeatherMapApiService
+      .fetchWeatherData(createWeatherDataDto)
+      .pipe(
+        map((response) => response.data),
+        handleAxiosError(),
+        switchMap((json) => {
+          const { part: _, ...data } = createWeatherDataDto;
+
+          delete json.lat;
+          delete json.lon;
+
+          return from(
+            this.weatherDataService.createOrUpdate({
+              json,
+              ...data,
+            }),
+          );
+        }),
+      );
   }
 
   @Get()
-  findAll() {
-    return this.weatherDataService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.weatherDataService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateWeatherDatumDto: UpdateWeatherDatumDto,
-  ) {
-    return this.weatherDataService.update(+id, updateWeatherDatumDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.weatherDataService.remove(+id);
+  @UseInterceptors(WeatherDataInterceptor)
+  public getWeatherData(
+    @Query() filter: WeatherDataQueryFilter,
+  ): Promise<WeatherData> {
+    return this.weatherDataService.findWeatherData(filter);
   }
 }
