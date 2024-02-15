@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { WeatherDataQueryFilter } from './dto';
 import { WeatherData } from './entities/weather-data.entity';
 import { OpenWeatherMapApiResponse } from './models/open-weather-map-api-response.interface';
-import { ResponseExcludePart } from './models/response-exclude-parts.interface';
 
 export interface WeatherDataPostPayload {
   json: OpenWeatherMapApiResponse;
-  lat: number | string;
-  lon: number | string;
-  part?: ResponseExcludePart[];
+  lat: number;
+  lon: number;
 }
 
 @Injectable()
@@ -23,15 +22,10 @@ export class WeatherDataService {
     json,
     lat,
     lon,
-    part,
   }: WeatherDataPostPayload): Promise<WeatherData> {
-    lat = Number(lat);
-    lon = Number(lon);
-
     let weatherDataRecord = await this.weatherDataRepository.findOneBy({
       lat,
       lon,
-      part: part as any,
     });
 
     if (!weatherDataRecord) {
@@ -39,7 +33,6 @@ export class WeatherDataService {
       weatherDataRecord.json = json;
       weatherDataRecord.lat = lat;
       weatherDataRecord.lon = lon;
-      weatherDataRecord.part = part;
     } else {
       weatherDataRecord.json = json;
     }
@@ -47,7 +40,10 @@ export class WeatherDataService {
     return this.weatherDataRepository.save(weatherDataRecord);
   }
 
-  public getAll() {
-    return this.weatherDataRepository.find();
+  public findWeatherData(filter: WeatherDataQueryFilter) {
+    return this.weatherDataRepository.findOneBy({
+      lat: filter.lat,
+      lon: filter.lon,
+    });
   }
 }

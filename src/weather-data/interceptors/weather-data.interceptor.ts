@@ -1,21 +1,31 @@
 import {
+  BadRequestException,
   CallHandler,
   ExecutionContext,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable, map } from 'rxjs';
-import { OpenWeatherMapApiResponse } from '../data-access/models/open-weather-map-api-response.interface';
+import { HttpStatusCode } from 'axios';
+import { Observable, map, tap } from 'rxjs';
+import { WeatherData } from '../data-access/entities/weather-data.entity';
 import { WeatherDataResponse } from '../data-access/models/weather-data-response.interface';
 
 @Injectable()
 export class WeatherDataInterceptor implements NestInterceptor {
   intercept(
     _: ExecutionContext,
-    next: CallHandler<OpenWeatherMapApiResponse>,
+    next: CallHandler<WeatherData>,
   ): Observable<WeatherDataResponse> {
     return next.handle().pipe(
-      map(({ current }) => ({
+      tap((weatherData) => {
+        if (!weatherData) {
+          throw new BadRequestException({
+            message: 'Weather data not found',
+            status: HttpStatusCode.NotFound,
+          });
+        }
+      }),
+      map(({ json: { current } }) => ({
         sunrise: current.sunrise,
         sunset: current.sunset,
         temp: current.temp,

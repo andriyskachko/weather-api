@@ -1,9 +1,21 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { from, map, switchMap } from 'rxjs';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
+import { Observable, from, map, switchMap } from 'rxjs';
 import { handleAxiosError } from 'src/shared/utils/handle-axios-error';
-import { CreateWeatherDataDto } from './data-access/dto';
+import {
+  CreateWeatherDataDto,
+  WeatherDataQueryFilter,
+} from './data-access/dto';
+import { WeatherData } from './data-access/entities/weather-data.entity';
 import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
 import { WeatherDataService } from './data-access/weather-data.service';
+import { WeatherDataInterceptor } from './interceptors/weather-data.interceptor';
 
 @Controller('weather-data')
 export class WeatherDataController {
@@ -13,25 +25,35 @@ export class WeatherDataController {
   ) {}
 
   @Post()
-  create(@Body() createWeatherDataDto: CreateWeatherDataDto) {
+  public create(
+    @Body() createWeatherDataDto: CreateWeatherDataDto,
+  ): Observable<WeatherData> {
     return this.openWeatherMapApiService
       .fetchWeatherData(createWeatherDataDto)
       .pipe(
         map((response) => response.data),
         handleAxiosError(),
-        switchMap((json) =>
-          from(
+        switchMap((json) => {
+          const { part: _, ...data } = createWeatherDataDto;
+
+          delete json.lat;
+          delete json.lon;
+
+          return from(
             this.weatherDataService.createOrUpdate({
               json,
-              ...createWeatherDataDto,
+              ...data,
             }),
-          ),
-        ),
+          );
+        }),
       );
   }
 
   @Get()
-  getAll() {
-    return this.weatherDataService.getAll();
+  @UseInterceptors(WeatherDataInterceptor)
+  public getWeatherData(
+    @Query() filter: WeatherDataQueryFilter,
+  ): Promise<WeatherData> {
+    return this.weatherDataService.findWeatherData(filter);
   }
 }
