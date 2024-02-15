@@ -1,45 +1,25 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { map, of, switchMap } from 'rxjs';
+import { handleAxiosError } from 'src/shared/utils/handle-axios-error';
+import { CreateWeatherDataDto } from './data-access/dto';
+import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
 import { WeatherDataService } from './data-access/weather-data.service';
-import { CreateWeatherDatumDto } from './data-access/dto/create-weather-datum.dto';
-import { UpdateWeatherDatumDto } from './data-access/dto/update-weather-datum.dto';
 
 @Controller('weather-data')
 export class WeatherDataController {
-  constructor(private readonly weatherDataService: WeatherDataService) {}
+  constructor(
+    private weatherDataService: WeatherDataService,
+    private openWeatherMapApiService: OpenWeatherMapApiService,
+  ) {}
 
   @Post()
-  create(@Body() createWeatherDatumDto: CreateWeatherDatumDto) {
-    return this.weatherDataService.create(createWeatherDatumDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.weatherDataService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.weatherDataService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateWeatherDatumDto: UpdateWeatherDatumDto,
-  ) {
-    return this.weatherDataService.update(+id, updateWeatherDatumDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.weatherDataService.remove(+id);
+  create(@Body() createWeatherDataDto: CreateWeatherDataDto) {
+    return this.openWeatherMapApiService
+      .fetchWeatherData(createWeatherDataDto)
+      .pipe(
+        map((response) => response.data),
+        handleAxiosError(),
+        switchMap((json) => of(this.weatherDataService.create(json))),
+      );
   }
 }

@@ -1,8 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
 import { WeatherDataService } from './data-access/weather-data.service';
-import { OpenWeatherMapApiInterceptor } from './interceptors/open-weather-map-api.interceptor';
-import { WeatherDataInterceptor } from './interceptors/weather-data.interceptor';
 import { WeatherDataController } from './weather-data.controller';
 
 @Module({
@@ -13,10 +12,6 @@ import { WeatherDataController } from './weather-data.controller';
     }),
   ],
   controllers: [WeatherDataController],
-  providers: [
-    WeatherDataService,
-    WeatherDataInterceptor,
-    OpenWeatherMapApiInterceptor,
-  ],
+  providers: [WeatherDataService, OpenWeatherMapApiService],
 })
 export class WeatherDataModule {}
