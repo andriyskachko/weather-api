@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { I18nModule } from 'nestjs-i18n';
+import path from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WeatherData } from './weather-data/data-access/entities/weather-data.entity';
@@ -23,6 +25,13 @@ import { WeatherDataModule } from './weather-data/weather-data.module';
         synchronize: true,
         autoLoadEntities: true,
       }),
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
     }),
     WeatherDataModule,
   ],
