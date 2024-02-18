@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsIn, IsLatitude, IsLongitude, IsOptional } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/generated/i18n.generated';
 import { MESSAGES } from 'src/weather-data/utils/constants';
 import {
   RESPONSE_EXCLUDE_PARTS,
@@ -9,7 +11,7 @@ import {
 export class CreateWeatherDataDto {
   @Type(() => Number)
   @IsLatitude({
-    message: MESSAGES.VALIDATION.LATITUDE,
+    message: i18nValidationMessage<I18nTranslations>('test.HELLO'),
   })
   lat: number;
 

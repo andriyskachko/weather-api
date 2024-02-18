@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Query,
+  UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
 import { Observable, from, map, switchMap } from 'rxjs';
@@ -16,6 +17,7 @@ import { WeatherData } from './data-access/entities/weather-data.entity';
 import { OpenWeatherMapApiService } from './data-access/open-weather-map-api.service';
 import { WeatherDataService } from './data-access/weather-data.service';
 import { WeatherDataInterceptor } from './interceptors/weather-data.interceptor';
+import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 
 @Controller('weather-data')
 export class WeatherDataController {
@@ -25,6 +27,7 @@ export class WeatherDataController {
   ) {}
 
   @Post()
+  @UseFilters(new I18nValidationExceptionFilter())
   public create(
     @Body() createWeatherDataDto: CreateWeatherDataDto,
   ): Observable<WeatherData> {
